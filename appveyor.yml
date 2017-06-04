@@ -1,0 +1,65 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+# Operating system (build VM template)
+os: Visual Studio 2015
+
+environment:
+  matrix:
+    - GENERATOR: Visual Studio 14 2015 Win64
+      PYTHON: "3.5"
+      ARCH: "64"
+  MSVC_DEFAULT_OPTIONS: ON
+  BOOST_ROOT: C:\Libraries\boost_1_63_0
+  BOOST_LIBRARYDIR: C:\Libraries\boost_1_63_0\lib64-msvc-14.0
+  pyarrow_version: 0.5.0
+  pyarrow_commit: 0576ff55ca9376dcb3c169046e22c403624cc57c
+  parquet_commit: 8a40ef8d67dc6ce0110ec9bc32145e6b87c660a2
+
+init:
+  - set MINICONDA=C:\Miniconda35-x64
+  - set PATH=%MINICONDA%;%MINICONDA%/Scripts;%MINICONDA%/Library/bin;%PATH%
+  - cmd: set ARROW_SRC_DIR=C:\apache-arrow
+  - cmd: mkdir %ARROW_SRC_DIR%
+  - ps: wget https://github.com/apache/arrow/archive/$($env:pyarrow_commit).zip -OutFile C:\apache-arrow\apache-arrow.zip
+  - cmd: 7z x %ARROW_SRC_DIR%\apache-arrow.zip -o"%ARROW_SRC_DIR%" -y > nul
+  - cmd: set ARROW_SRC=C:\apache-arrow\arrow-%pyarrow_commit%
+
+build_script:
+  - git config core.symlinks true
+  - git reset --hard
+  - call msvc-build.bat
+
+after_build:
+  7z a pyarrow_%pyarrow_version%.zip C:\apache-arrow\arrow-%pyarrow_commit%\python\dist\*.whl
+
+artifacts:
+  - path: pyarrow_$(pyarrow_version).zip
+    name: python_wheel
+
+deploy:
+  - provider: S3
+    access_key_id: AKIAJBP6HPINACFCSMZA
+    secret_access_key:
+      secure: ehq6uYk/Yl5blRknYN3mAxsSI6bMtlUhX+3wGjDBz4P++e2uVRrZV5jKDRlSiuTb
+    bucket: test-pyarrow-bucket
+    artifact: python_wheel
+    region: eu-central-1
+    set_public: true
+    on:
+      branch: master
+
