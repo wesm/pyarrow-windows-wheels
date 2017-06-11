@@ -17,7 +17,7 @@
 
 @echo on
 
-git config core.symlinks true
+conda update --yes --quiet conda
 
 conda create -n arrow -q -y python=%PYTHON% ^
       six pytest setuptools numpy=%NUMPY% pandas cython
@@ -32,7 +32,11 @@ set ARROW_SRC=C:\apache-arrow
 mkdir %ARROW_SRC%
 git clone https://github.com/apache/arrow.git %ARROW_SRC% || exit /B
 cd %ARROW_SRC%
-git checkout %pyarrow_commit%
+
+@rem fix up symlinks
+git config core.symlinks true
+git reset --hard || exit /B
+git checkout %pyarrow_commit% || exit /B
 
 set ARROW_HOME=%CONDA_PREFIX%\Library
 set PARQUET_HOME=%CONDA_PREFIX%\Library
