@@ -17,36 +17,27 @@
 
 @echo on
 
+git config core.symlinks true
+
 conda create -n arrow -q -y python=%PYTHON% ^
-      six pytest setuptools numpy pandas cython
+      six pytest setuptools numpy=%NUMPY% pandas cython
+
 conda install -n arrow -q -y -c conda-forge ^
       flatbuffers rapidjson ^
       cmake git boost-cpp thrift-cpp snappy zlib brotli
 
 call activate arrow
 
+set ARROW_SRC=C:\apache-arrow
+mkdir %ARROW_SRC%
+git clone https://github.com/apache/arrow.git %ARROW_SRC% || exit /B
+cd %ARROW_SRC%
+git checkout %pyarrow_commit%
+
 set ARROW_HOME=%CONDA_PREFIX%\Library
+set PARQUET_HOME=%CONDA_PREFIX%\Library
 set ARROW_BUILD_TOOLCHAIN=%CONDA_PREFIX%\Library
-
-@rem Create symlinks
-pushd %ARROW_SRC%\python\cmake_modules
-
-del FindPythonLibsNew.cmake || exit /B
-mklink FindPythonLibsNew.cmake ..\..\cpp\cmake_modules\FindPythonLibsNew.cmake || exit /B
-
-del SetupCxxFlags.cmake || exit /B
-mklink SetupCxxFlags.cmake ..\..\cpp\cmake_modules\SetupCxxFlags.cmake || exit /B
-
-del FindNumPy.cmake || exit /B
-mklink FindNumPy.cmake ..\..\cpp\cmake_modules\FindNumPy.cmake || exit /B
-
-del CompilerInfo.cmake || exit /B
-mklink CompilerInfo.cmake ..\..\cpp\cmake_modules\CompilerInfo.cmake || exit /B
-
-del BuildUtils.cmake || exit /B
-mklink BuildUtils.cmake ..\..\cpp\cmake_modules\BuildUtils.cmake || exit /B
-
-popd
+set PARQUET_BUILD_TOOLCHAIN=%CONDA_PREFIX%\Library
 
 @rem Build and test Arrow C++ libraries
 mkdir %ARROW_SRC%\cpp\build
@@ -56,14 +47,13 @@ cmake -G "%GENERATOR%" ^
       -DCMAKE_INSTALL_PREFIX=%CONDA_PREFIX%\Library ^
       -DARROW_BOOST_USE_SHARED=OFF ^
       -DCMAKE_BUILD_TYPE=Release ^
-      -DARROW_CXXFLAGS="/WX /MP" ^
+      -DARROW_CXXFLAGS="/MP" ^
       -DARROW_PYTHON=ON ^
       ..  || exit /B
 cmake --build . --target INSTALL --config Release  || exit /B
 
 @rem Needed so python-test.exe works
 set PYTHONPATH=%CONDA_PREFIX%\Lib;%CONDA_PREFIX%\Lib\site-packages;%CONDA_PREFIX%\python35.zip;%CONDA_PREFIX%\DLLs;%CONDA_PREFIX%
-
 ctest -VV  || exit /B
 popd
 
@@ -76,8 +66,6 @@ popd
 mkdir parquet-cpp\build
 pushd parquet-cpp\build
 
-set PARQUET_BUILD_TOOLCHAIN=%CONDA_PREFIX%\Library
-set PARQUET_HOME=%CONDA_PREFIX%\Library
 cmake -G "%GENERATOR%" ^
      -DCMAKE_INSTALL_PREFIX=%PARQUET_HOME% ^
      -DCMAKE_BUILD_TYPE=Release ^
