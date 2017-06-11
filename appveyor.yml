@@ -57,6 +57,6 @@ deploy:
       secure: T6rUTOWbyxuculsGAsKosSLEdQnY+B6Vlp7bWXdA7zLYgBFfJ7sA73JOigjA6jW+
     subject: pyarrow-windows-wheels
     repo: pyarrow-windows-wheels
-    version: %pyarrow_version%
+    version: "%pyarrow_version%"
     public: true
     override: true
