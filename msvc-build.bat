@@ -84,6 +84,6 @@ popd
 set PYTHONPATH=
 
 pushd %ARROW_SRC%\python
-python setup.py build_ext --inplace --with-parquet --bundle-arrow-cpp bdist_wheel  || exit /B
+python setup.py build_ext --with-parquet --bundle-arrow-cpp bdist_wheel  || exit /B
 py.test pyarrow -v -s || exit /B
 popd

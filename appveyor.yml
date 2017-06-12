@@ -62,8 +62,9 @@ deploy:
     username: wesm
     api_key:
       secure: T6rUTOWbyxuculsGAsKosSLEdQnY+B6Vlp7bWXdA7zLYgBFfJ7sA73JOigjA6jW+
-    subject: pyarrow-windows-wheels
+    subject: wesm
     repo: pyarrow-windows-wheels
+    package: pyarrow
     version: "%pyarrow_version%"
     public: true
     override: true
