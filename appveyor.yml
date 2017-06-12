@@ -46,9 +46,9 @@ environment:
 init:
   - set MINICONDA=C:\Miniconda35-x64
   - set PATH=%MINICONDA%;%MINICONDA%/Scripts;%MINICONDA%/Library/bin;%PATH%
-  - cmd: mkdir wheels
 
 build_script:
+  - cmd: mkdir wheels
   - call msvc-build.bat
 
 after_build:
