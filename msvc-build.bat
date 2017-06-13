@@ -75,6 +75,7 @@ pushd parquet-cpp\build
 cmake -G "%GENERATOR%" ^
      -DCMAKE_INSTALL_PREFIX=%PARQUET_HOME% ^
      -DCMAKE_BUILD_TYPE=Release ^
+     -DPARQUET_BOOST_USE_SHARED=off ^
      -DPARQUET_ZLIB_VENDORED=off ^
      -DPARQUET_BUILD_TESTS=off .. || exit /B
 cmake --build . --target INSTALL --config Release || exit /B
