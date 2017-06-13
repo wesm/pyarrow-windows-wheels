@@ -87,3 +87,12 @@ set PYTHONPATH=
 pushd %ARROW_SRC%\python
 python setup.py build_ext --with-parquet --bundle-arrow-cpp bdist_wheel  || exit /B
 popd
+
+@rem test the wheel
+call deactivate
+conda create -n wheel-test -q -y python=%PYTHON% ^
+      numpy=%NUMPY% pandas
+call activate wheel-test
+
+pip install --no-index --find-links=dist\ pyarrow
+python -c "import pyarrow; import pyarrow.parquet"
