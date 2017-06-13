@@ -21,16 +21,8 @@ os: Visual Studio 2015
 environment:
   matrix:
     - GENERATOR: Visual Studio 14 2015 Win64
-      NUMPY: "1.12"
-      PYTHON: "3.5"
-      ARCH: "64"
-    - GENERATOR: Visual Studio 14 2015 Win64
       NUMPY: "1.13"
       PYTHON: "3.5"
-      ARCH: "64"
-    - GENERATOR: Visual Studio 14 2015 Win64
-      NUMPY: "1.12"
-      PYTHON: "3.6"
       ARCH: "64"
     - GENERATOR: Visual Studio 14 2015 Win64
       NUMPY: "1.13"
@@ -66,5 +58,6 @@ deploy:
     repo: pyarrow-windows-wheels
     package: pyarrow
     version: "%pyarrow_version%"
+    publish: true
     public: true
     override: true
