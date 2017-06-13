@@ -94,5 +94,5 @@ conda create -n wheel-test -q -y python=%PYTHON% ^
       numpy=%NUMPY% pandas
 call activate wheel-test
 
-pip install --no-index --find-links=dist\ pyarrow
+pip install --no-index --find-links=%ARROW_SRC%\python\dist\ pyarrow
 python -c "import pyarrow; import pyarrow.parquet"
