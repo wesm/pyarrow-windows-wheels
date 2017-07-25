@@ -24,7 +24,7 @@ conda create -n arrow -q -y python=%PYTHON% ^
 
 conda install -n arrow -q -y -c conda-forge ^
       flatbuffers rapidjson ^
-      cmake git boost-cpp thrift-cpp snappy zlib brotli
+      cmake git boost-cpp thrift-cpp snappy zlib brotli zstd lz4-c
 
 call activate arrow
 
@@ -76,7 +76,6 @@ cmake -G "%GENERATOR%" ^
      -DCMAKE_INSTALL_PREFIX=%PARQUET_HOME% ^
      -DCMAKE_BUILD_TYPE=Release ^
      -DPARQUET_BOOST_USE_SHARED=off ^
-     -DPARQUET_ZLIB_VENDORED=off ^
      -DPARQUET_BUILD_TESTS=off .. || exit /B
 cmake --build . --target INSTALL --config Release || exit /B
 popd
