@@ -28,6 +28,9 @@ conda install -n arrow -q -y -c conda-forge ^
 
 call activate arrow
 
+@rem Temporary hack for ARROW-1275 issue
+set SETUPTOOLS_SCM_PRETEND_VERSION=0.5.0
+
 set ARROW_SRC=C:\apache-arrow
 mkdir %ARROW_SRC%
 git clone https://github.com/apache/arrow.git %ARROW_SRC% || exit /B
